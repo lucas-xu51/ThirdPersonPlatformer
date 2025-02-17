@@ -5,12 +5,13 @@ public class PlayerController : MonoBehaviour
     public Rigidbody playerRigidbody; // Rigidbody 组件
     public float moveSpeed = 5f;      // 移动速度
     public float jumpForce = 5f;      // 跳跃力度
-    public float dashMultiplier = 2f; // 冲刺速度倍数
+    public float dashMultiplier = 3f; // 冲刺速度倍数
     public float rayLength = 0.6f;    // 射线检测长度
     public Transform cameraTransform; // 摄像机的 Transform
 
     private bool isGrounded = false;  // 是否在地面
     private bool isDashing = false;   // 是否正在冲刺
+    private int jumpCount = 0;        // 跳跃次数
 
     void Start()
     {
@@ -72,23 +73,29 @@ public class PlayerController : MonoBehaviour
         Vector3 rayOrigin = transform.position + Vector3.down * 0.5f; // 确保射线从角色的脚底发射
         isGrounded = Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength);
 
+        // 如果角色在地面上，重置跳跃次数
+        if (isGrounded)
+        {
+            jumpCount = 0;
+        }
+
         // 调试信息：显示地面检测结果
         Debug.DrawLine(rayOrigin, rayOrigin + Vector3.down * rayLength, isGrounded ? Color.green : Color.red);
         Debug.Log("Is Grounded: " + isGrounded);
 
-
         // 跳跃控制
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (isGrounded)
+            if (jumpCount < 2) // 允许二段跳
             {
-                // 直接设置 Y 轴速度实现跳跃
-                playerRigidbody.linearVelocity = new Vector3(playerRigidbody.linearVelocity.x, jumpForce, playerRigidbody.linearVelocity.z);
-                Debug.Log("Jump!");
+                playerRigidbody.linearVelocity = new Vector3(playerRigidbody.linearVelocity.x, 0, playerRigidbody.linearVelocity.z); // 清除 Y 轴速度，确保跳跃高度一致
+                playerRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                jumpCount++;
+                Debug.Log("Jump! Jump Count: " + jumpCount);
             }
             else
             {
-                Debug.Log("Not Grounded, Cannot Jump");
+                Debug.Log("Max Jump Reached");
             }
         }
     }

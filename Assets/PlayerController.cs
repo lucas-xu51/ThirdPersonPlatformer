@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour
     private bool isDashing = false;   // 是否正在冲刺
     private int jumpCount = 0;        // 跳跃次数
 
+    public int score = 0; // 记录得分
+    public ScoreManager scoreManager;
+
+
     void Start()
     {
         // 如果没有手动赋值 Rigidbody，尝试自动获取
@@ -26,10 +30,32 @@ public class PlayerController : MonoBehaviour
         {
             cameraTransform = Camera.main.transform;
         }
+
+        scoreManager = FindAnyObjectByType<ScoreManager>();
     }
 
     void Update()
     {
+
+        //float mouseX = Input.GetAxis("Mouse X");
+        //transform.Rotate(0, mouseX, 0); // 控制角色左右旋转，旋转速度可以调整
+
+        // 让角色面向摄像机的反方向
+        Vector3 cameraPosition = cameraTransform.position;
+        Vector3 playerPosition = transform.position;
+
+        // 计算面朝摄像机的方向
+        Vector3 directionToCamera = (cameraPosition - playerPosition).normalized;
+
+        // 计算背对摄像机的方向（朝相反方向）
+        Vector3 lookDirection = -new Vector3(directionToCamera.x, 0, directionToCamera.z); // 忽略 y 轴，防止角色倾斜
+
+        // 使角色旋转到背对摄像机的方向
+        if (lookDirection != Vector3.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(lookDirection);
+        }
+
         // 获取输入
         Vector2 inputVector = Vector2.zero;
         if (Input.GetKey(KeyCode.W))
@@ -106,4 +132,18 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = isGrounded ? Color.green : Color.red;
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down * rayLength);
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Coin")) // 检查是否碰到硬币
+        {
+
+            scoreManager.AddScore(1);
+            score++; // 分数+1
+            Debug.Log("Score: " + score); // 输出分数到控制台
+
+            Destroy(other.gameObject); // 销毁硬币
+        }
+    }
 }
+

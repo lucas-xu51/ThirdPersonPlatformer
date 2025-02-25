@@ -1,9 +1,6 @@
 # COSC416 Assignment 3
 
-## I apologize for losing 0.5 points in **Assignment 2** due to the commit message.
-## However, **Assignment 3** was already completed before the grades for **Assignment 2** were released,
-## which meant I could not change the commit names in **Assignment 3** anymore (my rebase caused conflicts).
-## In the upcoming assignments, I will ensure that commit messages are clear.
+## I apologize for losing 0.5 points in **Assignment 2** due to the commit message. However, **Assignment 3** was already completed before the grades for **Assignment 2** were released, which meant I could not change the commit names in **Assignment 3** anymore (my rebase caused conflicts). In the upcoming assignments, I will ensure that commit messages are clear.
 
 ## Game Rules
 
